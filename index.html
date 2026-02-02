@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Une petite question... ❤️</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #ffebee;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .gif {
+            width: 200px;
+            max-width: 70vw;
+            margin-bottom: 20px;
+            border-radius: 15px;
+        }
+
+        h1 {
+            color: #d32f2f;
+            font-size: 1.8rem;
+            margin: 10px 20px 30px;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            width: 100%;
+            padding: 20px 0;
+            position: relative;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            touch-action: manipulation;
+            white-space: nowrap;
+        }
+
+        #yesBtn {
+            background-color: #4caf50;
+            color: white;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+            position: relative;
+            z-index: 1;
+        }
+
+        #noBtn {
+            background-color: #f44336;
+            color: white;
+            position: absolute;
+            z-index: 10;
+            left: 60%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.4rem;
+            }
+
+            button {
+                padding: 12px 22px;
+                font-size: 1rem;
+            }
+
+            .gif {
+                width: 160px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .buttons {
+                flex-direction: column;
+                gap: 10px;
+                height: auto;
+            }
+            #noBtn {
+                position: absolute;
+                left: 50%;
+                top: 100%;
+                transform: translate(-50%, 0);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <img src="https://media.giphy.com/media/c76IJLufpNwSULPk77/giphy.gif"
+         alt="Chat mignon"
+         class="gif">
+
+    <h1>Veux-tu être ma Valentine ? ❤️</h1>
+
+    <div class="buttons">
+        <button id="yesBtn">OUI !</button>
+        <button id="noBtn">NON</button>
+    </div>
+
+    <script>
+        const noBtn = document.getElementById('noBtn');
+        const yesBtn = document.getElementById('yesBtn');
+
+        const moveButton = () => {
+            const padding = 20;
+            const maxX = window.innerWidth - noBtn.offsetWidth - padding;
+            const maxY = window.innerHeight - noBtn.offsetHeight - padding;
+
+            const x = Math.random() * maxX + padding;
+            const y = Math.random() * maxY + padding;
+
+            noBtn.style.position = 'fixed';
+            noBtn.style.left = x + 'px';
+            noBtn.style.top = y + 'px';
+        };
+
+        noBtn.addEventListener('mouseover', moveButton);
+
+        noBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            moveButton();
+        }, { passive: false });
+
+        yesBtn.addEventListener('click', () => {
+            document.body.innerHTML = `
+                <img src="https://media.giphy.com/media/KztT2c4u8mYYUiMKdJ/giphy.gif"
+                     class="gif"
+                     alt="Chat qui fête">
+                <h1 style="color: #d32f2f;">YEAH ! Je savais que tu dirais oui ! 😍❤️</h1>
+                <p style="font-size: 1.2rem;">Rendez-vous le 14 février ! 🌹</p>
+            `;
+        });
+    </script>
+</body>
+</html>
