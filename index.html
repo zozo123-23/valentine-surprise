@@ -68,10 +68,28 @@
             background-color: #f44336;
             color: white;
             position: absolute;
+            transition: none;
             z-index: 10;
             left: 60%;
             top: 50%;
             transform: translate(-50%, -50%);
+        }
+
+        .heart {
+            position: fixed;
+            top: -40px;
+            font-size: 1.6rem;
+            pointer-events: none;
+            animation: fall linear forwards;
+        }
+
+        @keyframes fall {
+            to { transform: translateY(110vh) rotate(360deg); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .heart { display: none; }
+            button { transition: none; }
         }
 
         @media (max-width: 480px) {
@@ -106,11 +124,9 @@
 </head>
 <body>
 
-    <img src="https://media.giphy.com/media/c76IJLufpNwSULPk77/giphy.gif"
-         alt="Chat mignon"
-         class="gif">
+    <img src="img/question.gif" alt="Chat mignon" class="gif">
 
-    <h1>Veux-tu être ma Valentine ? ❤️</h1>
+    <h1 id="question">Veux-tu être ma Valentine ? ❤️</h1>
 
     <div class="buttons">
         <button id="yesBtn">OUI !</button>
@@ -118,37 +134,110 @@
     </div>
 
     <script>
+        // --- Réglages -------------------------------------------------------
+        // Prénom : ajoute ?pour=Prénom à l'adresse (ex. index.html?pour=Sonia).
+        // Date du rendez-vous affichée après le OUI.
+        const DATE_RDV = '14 février';
+        // Pour être prévenu du OUI : crée un formulaire sur https://formspree.io
+        // et colle ici son adresse (https://formspree.io/f/xxxxxxxx). Vide = désactivé.
+        const NOTIFY_URL = '';
+        // --------------------------------------------------------------------
+
         const noBtn = document.getElementById('noBtn');
         const yesBtn = document.getElementById('yesBtn');
+        const question = document.getElementById('question');
+
+        const prenom = (new URLSearchParams(location.search).get('pour') || '').trim().slice(0, 30);
+        if (prenom) {
+            question.textContent = prenom + ', veux-tu être ma Valentine ? ❤️';
+        }
+
+        const overlaps = (a, b, margin) =>
+            a.left < b.right + margin && a.right > b.left - margin &&
+            a.top < b.bottom + margin && a.bottom > b.top - margin;
+
+        let dodges = 0;
 
         const moveButton = () => {
-            const padding = 20;
-            const maxX = window.innerWidth - noBtn.offsetWidth - padding;
-            const maxY = window.innerHeight - noBtn.offsetHeight - padding;
+            // Le NON rétrécit, le OUI grossit (avant de calculer la position).
+            dodges++;
+            noBtn.style.fontSize = Math.max(0.7, 1.2 - dodges * 0.05) + 'rem';
+            yesBtn.style.fontSize = Math.min(1.8, 1.2 + dodges * 0.06) + 'rem';
 
-            const x = Math.random() * maxX + padding;
-            const y = Math.random() * maxY + padding;
+            const padding = 20;
+            const w = noBtn.offsetWidth;
+            const h = noBtn.offsetHeight;
+            const maxX = Math.max(padding, window.innerWidth - w - padding);
+            const maxY = Math.max(padding, window.innerHeight - h - padding);
+            const avoid = [yesBtn, question].map(el => el.getBoundingClientRect());
+
+            let x, y;
+            for (let i = 0; i < 50; i++) {
+                x = Math.random() * (maxX - padding) + padding;
+                y = Math.random() * (maxY - padding) + padding;
+                const box = { left: x, top: y, right: x + w, bottom: y + h };
+                if (!avoid.some(r => overlaps(box, r, 10))) break;
+            }
 
             noBtn.style.position = 'fixed';
+            noBtn.style.transform = 'none';
             noBtn.style.left = x + 'px';
             noBtn.style.top = y + 'px';
         };
 
         noBtn.addEventListener('mouseover', moveButton);
-
+        // Clavier (Tab) et clic de secours : le NON s'échappe aussi.
+        noBtn.addEventListener('focus', moveButton);
+        noBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            moveButton();
+        });
         noBtn.addEventListener('touchstart', (e) => {
             e.preventDefault();
             moveButton();
         }, { passive: false });
 
+        const rain = () => {
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+            for (let i = 0; i < 40; i++) {
+                const h = document.createElement('span');
+                h.className = 'heart';
+                h.textContent = ['❤️', '💖', '🌹'][i % 3];
+                h.style.left = Math.random() * 100 + 'vw';
+                h.style.animationDuration = 2 + Math.random() * 3 + 's';
+                h.style.animationDelay = Math.random() * 2 + 's';
+                document.body.appendChild(h);
+            }
+        };
+
+        const notify = () => {
+            if (!NOTIFY_URL) return;
+            fetch(NOTIFY_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                body: JSON.stringify({
+                    message: (prenom || 'Quelqu\'un') + ' a dit OUI ❤️',
+                    refus_esquives: dodges
+                })
+            }).catch(() => {});
+        };
+
         yesBtn.addEventListener('click', () => {
-            document.body.innerHTML = `
-                <img src="https://media.giphy.com/media/KztT2c4u8mYYUiMKdJ/giphy.gif"
-                     class="gif"
-                     alt="Chat qui fête">
-                <h1 style="color: #d32f2f;">YEAH ! Je savais que tu dirais oui ! 😍❤️</h1>
-                <p style="font-size: 1.2rem;">Rendez-vous le 14 février ! 🌹</p>
-            `;
+            const img = document.createElement('img');
+            img.src = 'img/oui.gif';
+            img.alt = 'Chat qui fête';
+            img.className = 'gif';
+
+            const titre = document.createElement('h1');
+            titre.textContent = 'YEAH ! Je savais que tu dirais oui ! 😍❤️';
+
+            const rdv = document.createElement('p');
+            rdv.style.fontSize = '1.2rem';
+            rdv.textContent = 'Rendez-vous le ' + DATE_RDV + ' ! 🌹';
+
+            document.body.replaceChildren(img, titre, rdv);
+            rain();
+            notify();
         });
     </script>
 </body>
