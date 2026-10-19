@@ -21,13 +21,13 @@ body.theme-noel {
 }
 
 body.theme-anniv {
-    --bg1: #fff3d6;
-    --bg2: #ffd9a0;
-    --blob: #c4a5ff;
-    --accent: #f97316;
-    --accent-dark: #c2410c;
-    --ink: #4a2a0c;
-    --soft: #8a5a2b;
+    --bg1: #fbf3e4;
+    --bg2: #ecd9b4;
+    --blob: #d4af6a;
+    --accent: #b8862b;
+    --accent-dark: #7a5516;
+    --ink: #3b2a12;
+    --soft: #7d6440;
 }
 
 * {
