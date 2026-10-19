@@ -135,7 +135,6 @@
 
     <script>
         // --- Réglages -------------------------------------------------------
-        // Prénom : ajoute ?pour=Prénom à l'adresse (ex. index.html?pour=Sonia).
         // Date du rendez-vous affichée après le OUI.
         const DATE_RDV = '14 février';
         // Pour être prévenu du OUI : crée un formulaire sur https://formspree.io
@@ -146,11 +145,6 @@
         const noBtn = document.getElementById('noBtn');
         const yesBtn = document.getElementById('yesBtn');
         const question = document.getElementById('question');
-
-        const prenom = (new URLSearchParams(location.search).get('pour') || '').trim().slice(0, 30);
-        if (prenom) {
-            question.textContent = prenom + ', veux-tu être ma Valentine ? ❤️';
-        }
 
         const overlaps = (a, b, margin) =>
             a.left < b.right + margin && a.right > b.left - margin &&
@@ -216,7 +210,7 @@
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
                 body: JSON.stringify({
-                    message: (prenom || 'Quelqu\'un') + ' a dit OUI ❤️',
+                    message: 'Réponse : OUI ❤️',
                     refus_esquives: dodges
                 })
             }).catch(() => {});
