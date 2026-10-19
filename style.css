@@ -1,0 +1,230 @@
+/* Style commun aux trois pages. Le thème se choisit avec la classe du <body>. */
+
+:root {
+    --bg1: #ffe3ec;
+    --bg2: #ffc2d4;
+    --blob: #ff8fab;
+    --accent: #e11d48;
+    --accent-dark: #be123c;
+    --ink: #4a1d2c;
+    --soft: #8a4a5c;
+}
+
+body.theme-noel {
+    --bg1: #e6f4ea;
+    --bg2: #b7dfc4;
+    --blob: #f4a3a3;
+    --accent: #c62828;
+    --accent-dark: #991b1b;
+    --ink: #1f3d2b;
+    --soft: #4a6b57;
+}
+
+body.theme-anniv {
+    --bg1: #fff3d6;
+    --bg2: #ffd9a0;
+    --blob: #c4a5ff;
+    --accent: #f97316;
+    --accent-dark: #c2410c;
+    --ink: #4a2a0c;
+    --soft: #8a5a2b;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    -webkit-text-size-adjust: 100%;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px;
+    font-family: 'Quicksand', 'Segoe UI', system-ui, sans-serif;
+    color: var(--ink);
+    background: linear-gradient(160deg, var(--bg1), var(--bg2));
+    overflow: hidden;
+    position: relative;
+}
+
+/* Grosses taches de couleur floues qui bougent doucement */
+.blob {
+    position: fixed;
+    border-radius: 50%;
+    background: var(--blob);
+    filter: blur(70px);
+    opacity: 0.45;
+    pointer-events: none;
+    animation: drift 18s ease-in-out infinite alternate;
+}
+.blob.b1 { width: 320px; height: 320px; top: -80px; left: -60px; }
+.blob.b2 { width: 280px; height: 280px; bottom: -70px; right: -50px; animation-delay: -6s; }
+.blob.b3 { width: 200px; height: 200px; top: 45%; left: 55%; animation-delay: -11s; opacity: 0.3; }
+
+@keyframes drift {
+    from { transform: translate(0, 0) scale(1); }
+    to   { transform: translate(40px, 30px) scale(1.15); }
+}
+
+/* Petits symboles qui montent lentement en arrière-plan */
+.float {
+    position: fixed;
+    bottom: -40px;
+    pointer-events: none;
+    opacity: 0.55;
+    animation: rise linear infinite;
+}
+@keyframes rise {
+    to { transform: translateY(-115vh) rotate(25deg); }
+}
+
+/* La carte centrale */
+.card {
+    position: relative;
+    z-index: 2;
+    width: min(460px, 100%);
+    padding: 36px 28px 32px;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.62);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: 32px;
+    box-shadow: 0 20px 60px rgba(120, 40, 70, 0.18);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+    animation: appear 0.9s cubic-bezier(.2, .8, .2, 1) both;
+}
+@keyframes appear {
+    from { opacity: 0; transform: translateY(24px) scale(0.97); }
+    to   { opacity: 1; transform: none; }
+}
+
+.hero {
+    width: 190px;
+    max-width: 60vw;
+    border-radius: 22px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.14);
+    margin-bottom: 18px;
+}
+
+.big-emoji {
+    font-size: 5.5rem;
+    line-height: 1;
+    margin-bottom: 14px;
+    display: inline-block;
+    animation: bob 3.2s ease-in-out infinite;
+}
+@keyframes bob {
+    0%, 100% { transform: translateY(0) rotate(-4deg); }
+    50%      { transform: translateY(-10px) rotate(4deg); }
+}
+
+h1 {
+    margin: 0 0 8px;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-weight: 700;
+    font-size: clamp(1.7rem, 6vw, 2.2rem);
+    line-height: 1.2;
+    color: var(--accent-dark);
+}
+
+/* Les mots du titre apparaissent un par un */
+.word {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(10px);
+    animation: word-in 0.6s ease forwards;
+}
+@keyframes word-in {
+    to { opacity: 1; transform: none; }
+}
+
+.sub {
+    margin: 0 0 26px;
+    font-size: 1.05rem;
+    color: var(--soft);
+}
+
+.script {
+    font-family: 'Caveat', cursive;
+    font-weight: 700;
+    font-size: 1.9rem;
+    line-height: 1.25;
+    color: var(--ink);
+    margin: 10px 0 0;
+}
+
+.buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    min-height: 64px;
+}
+
+button {
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 1.1rem;
+    padding: 14px 32px;
+    border: none;
+    border-radius: 999px;
+    cursor: pointer;
+    white-space: nowrap;
+    touch-action: manipulation;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.btn-yes {
+    color: #fff;
+    background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.2);
+}
+.btn-yes:hover,
+.btn-yes:focus-visible {
+    transform: translateY(-2px) scale(1.04);
+}
+
+.btn-no {
+    color: var(--soft);
+    background: rgba(255, 255, 255, 0.85);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+}
+
+button:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 3px;
+}
+
+/* Pluie qui suit le OUI */
+.confetti {
+    position: fixed;
+    top: -40px;
+    z-index: 5;
+    font-size: 1.7rem;
+    pointer-events: none;
+    animation: fall linear forwards;
+}
+@keyframes fall {
+    to { transform: translateY(112vh) rotate(420deg); }
+}
+
+@media (max-width: 400px) {
+    .card { padding: 30px 20px 26px; border-radius: 26px; }
+    .script { font-size: 1.6rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .blob, .float, .confetti, .big-emoji { animation: none; }
+    .float, .confetti { display: none; }
+    .card { animation: none; }
+    .word { opacity: 1; transform: none; animation: none; }
+    button { transition: none; }
+}
