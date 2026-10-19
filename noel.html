@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Une petite question... 🎄</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #e8f5e9;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .emoji {
+            font-size: 6rem;
+            margin-bottom: 10px;
+        }
+
+        .gif {
+            width: 200px;
+            max-width: 70vw;
+            margin-bottom: 20px;
+            border-radius: 15px;
+        }
+
+        h1 {
+            color: #c62828;
+            font-size: 1.8rem;
+            margin: 10px 20px 30px;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            width: 100%;
+            padding: 20px 0;
+            position: relative;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            touch-action: manipulation;
+            white-space: nowrap;
+        }
+
+        #yesBtn {
+            background-color: #4caf50;
+            color: white;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+            position: relative;
+            z-index: 1;
+        }
+
+        #noBtn {
+            background-color: #f44336;
+            color: white;
+            position: absolute;
+            transition: none;
+            z-index: 10;
+            left: 60%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .heart {
+            position: fixed;
+            top: -40px;
+            font-size: 1.6rem;
+            pointer-events: none;
+            animation: fall linear forwards;
+        }
+
+        @keyframes fall {
+            to { transform: translateY(110vh) rotate(360deg); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .heart { display: none; }
+            button { transition: none; }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.4rem;
+            }
+
+            button {
+                padding: 12px 22px;
+                font-size: 1rem;
+            }
+
+            .gif {
+                width: 160px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .buttons {
+                flex-direction: column;
+                gap: 10px;
+                height: auto;
+            }
+            #noBtn {
+                position: absolute;
+                left: 50%;
+                top: 100%;
+                transform: translate(-50%, 0);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="emoji" aria-hidden="true">🎅</div>
+
+    <h1 id="question">Veux-tu passer Noël avec moi ? 🎄</h1>
+
+    <div class="buttons">
+        <button id="yesBtn">OUI !</button>
+        <button id="noBtn">NON</button>
+    </div>
+
+    <script>
+        // --- Réglages -------------------------------------------------------
+        // Date du rendez-vous affichée après le OUI.
+        const DATE_RDV = '25 décembre';
+        // Pour être prévenu du OUI : crée un formulaire sur https://formspree.io
+        // et colle ici son adresse (https://formspree.io/f/xxxxxxxx). Vide = désactivé.
+        const NOTIFY_URL = 'https://formspree.io/f/mdeavnoq';
+        // --------------------------------------------------------------------
+
+        const noBtn = document.getElementById('noBtn');
+        const yesBtn = document.getElementById('yesBtn');
+        const question = document.getElementById('question');
+
+        const overlaps = (a, b, margin) =>
+            a.left < b.right + margin && a.right > b.left - margin &&
+            a.top < b.bottom + margin && a.bottom > b.top - margin;
+
+        let dodges = 0;
+
+        const moveButton = () => {
+            // Le NON rétrécit, le OUI grossit (avant de calculer la position).
+            dodges++;
+            noBtn.style.fontSize = Math.max(0.7, 1.2 - dodges * 0.05) + 'rem';
+            yesBtn.style.fontSize = Math.min(1.8, 1.2 + dodges * 0.06) + 'rem';
+
+            const padding = 20;
+            const w = noBtn.offsetWidth;
+            const h = noBtn.offsetHeight;
+            const maxX = Math.max(padding, window.innerWidth - w - padding);
+            const maxY = Math.max(padding, window.innerHeight - h - padding);
+            const avoid = [yesBtn, question].map(el => el.getBoundingClientRect());
+
+            let x, y;
+            for (let i = 0; i < 50; i++) {
+                x = Math.random() * (maxX - padding) + padding;
+                y = Math.random() * (maxY - padding) + padding;
+                const box = { left: x, top: y, right: x + w, bottom: y + h };
+                if (!avoid.some(r => overlaps(box, r, 10))) break;
+            }
+
+            noBtn.style.position = 'fixed';
+            noBtn.style.transform = 'none';
+            noBtn.style.left = x + 'px';
+            noBtn.style.top = y + 'px';
+        };
+
+        noBtn.addEventListener('mouseover', moveButton);
+        // Clavier (Tab) et clic de secours : le NON s'échappe aussi.
+        noBtn.addEventListener('focus', moveButton);
+        noBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            moveButton();
+        });
+        noBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            moveButton();
+        }, { passive: false });
+
+        const rain = () => {
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+            for (let i = 0; i < 40; i++) {
+                const h = document.createElement('span');
+                h.className = 'heart';
+                h.textContent = ['❄️', '🎄', '🎁'][i % 3];
+                h.style.left = Math.random() * 100 + 'vw';
+                h.style.animationDuration = 2 + Math.random() * 3 + 's';
+                h.style.animationDelay = Math.random() * 2 + 's';
+                document.body.appendChild(h);
+            }
+        };
+
+        const notify = () => {
+            if (!NOTIFY_URL) return;
+            fetch(NOTIFY_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                body: JSON.stringify({
+                    message: 'Réponse Noël : OUI 🎄',
+                    refus_esquives: dodges
+                })
+            }).catch(() => {});
+        };
+
+        yesBtn.addEventListener('click', () => {
+            const img = document.createElement('div');
+            img.className = 'emoji';
+            img.textContent = '🎁';
+
+            const titre = document.createElement('h1');
+            titre.textContent = 'YEAH ! Joyeux Noël ! 🎄🎉';
+
+            const rdv = document.createElement('p');
+            rdv.style.fontSize = '1.2rem';
+            rdv.textContent = 'Rendez-vous le ' + DATE_RDV + ' ! ⛄';
+
+            document.body.replaceChildren(img, titre, rdv);
+            rain();
+            notify();
+        });
+    </script>
+</body>
+</html>

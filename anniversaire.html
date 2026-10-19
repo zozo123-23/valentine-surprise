@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Une surprise pour toi 🎂</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #fff8e1;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .emoji {
+            font-size: 6rem;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            color: #e65100;
+            font-size: 1.8rem;
+            margin: 10px 20px 30px;
+        }
+
+        p {
+            font-size: 1.2rem;
+            margin: 0 20px;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            background-color: #ff9800;
+            color: white;
+            box-shadow: 0 4px 15px rgba(255, 152, 0, 0.4);
+            touch-action: manipulation;
+            white-space: nowrap;
+        }
+
+        .confetti {
+            position: fixed;
+            top: -40px;
+            font-size: 1.6rem;
+            pointer-events: none;
+            animation: fall linear forwards;
+        }
+
+        @keyframes fall {
+            to { transform: translateY(110vh) rotate(360deg); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .confetti { display: none; }
+        }
+
+        @media (max-width: 480px) {
+            h1 { font-size: 1.4rem; }
+            button { padding: 12px 22px; font-size: 1rem; }
+            .emoji { font-size: 4.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="emoji" id="emoji" aria-hidden="true">🎁</div>
+
+    <h1 id="titre">J'ai une surprise pour toi...</h1>
+
+    <button id="openBtn">Ouvrir mon cadeau 🎀</button>
+
+    <script>
+        const openBtn = document.getElementById('openBtn');
+        const emoji = document.getElementById('emoji');
+        const titre = document.getElementById('titre');
+
+        const rain = () => {
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+            const items = ['🎉', '🎊', '🎈', '🎂', '✨'];
+            for (let i = 0; i < 50; i++) {
+                const c = document.createElement('span');
+                c.className = 'confetti';
+                c.textContent = items[i % items.length];
+                c.style.left = Math.random() * 100 + 'vw';
+                c.style.animationDuration = 2 + Math.random() * 3 + 's';
+                c.style.animationDelay = Math.random() * 2 + 's';
+                document.body.appendChild(c);
+            }
+        };
+
+        openBtn.addEventListener('click', () => {
+            emoji.textContent = '🎂';
+            titre.textContent = 'JOYEUX ANNIVERSAIRE ! 🎉';
+
+            const msg = document.createElement('p');
+            msg.textContent = 'Plein de bonheur, de rires et de belles surprises pour cette nouvelle année ! 🥳';
+
+            openBtn.replaceWith(msg);
+            rain();
+        });
+    </script>
+</body>
+</html>
